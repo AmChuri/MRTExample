@@ -1,4 +1,5 @@
 // ChildTable.tsx
+import { Typography } from '@mui/material';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import {
   MaterialReactTable,
@@ -44,15 +45,16 @@ const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
 
   // @ts-ignore
   const allRows = data?.pages.flatMap((page) => page.rows) ?? [];
-  console.log(allRows);
   const table = useMaterialReactTable({
     columns,
     data: allRows,
     enableRowNumbers: true,
     enableRowVirtualization: true,
+    enablePagination: false,
     manualPagination: true,
     rowCount: totalRowCount,
     enableColumnOrdering: true,
+    rowVirtualizerOptions: { overscan: 4 },
     muiTableBodyRowProps: ({ row }) => ({
       sx: {
         height: '24px',
@@ -76,6 +78,11 @@ const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
         }
       },
     },
+    renderBottomToolbarCustomActions: () => (
+      <Typography>
+        Fetched {allRows.length} of {totalRowCount} total rows.
+      </Typography>
+    ),
   });
 
   return <MaterialReactTable table={table} />;
