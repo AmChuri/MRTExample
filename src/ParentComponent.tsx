@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useQuery } from '@tanstack/react-query';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useMemo } from 'react';
@@ -28,7 +29,7 @@ const ParentComponent = () => {
   return (
     <ChildTable
       columns={columns}
-      totalRowCount={data.totalRowCount}
+      totalRowCount={data?.totalRowCount}
     />
   );
 };

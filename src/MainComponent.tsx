@@ -6,7 +6,6 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import Example from './Example';
 import { makeData, Person } from './makeData';
-import Test from './Test';
 
 const MainComponent = () => {
   const [open, setOpen] = useState(false);
@@ -114,12 +113,12 @@ const MainComponent = () => {
       <Button variant="outlined" onClick={handleClickOpen}>
         Open form dialog
       </Button>
-      <Test
+      {/* <Test
         open={open}
         onClick={handleClose}
         columns={columns}
         table={table}
-      />
+  />*/}
       <Example columns={columns} />
     </>
   );

@@ -5,8 +5,7 @@ import {
   MRT_TableOptions,
   useMaterialReactTable,
 } from 'material-react-table';
-import React from 'react';
-import { getRows } from './fakeApi';
+import { getRows, RowResponse } from './fakeApi';
 import { Person } from './ParentComponent';
 
 type ChildTableProps = {
@@ -16,12 +15,15 @@ type ChildTableProps = {
 
 const PAGE_SIZE = 500;
 
-const ChildTable: React.FC<ChildTableProps> = ({
-  columns,
-  totalRowCount,
-}) => {
+const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
-    useInfiniteQuery({
+    useInfiniteQuery<
+      RowResponse,
+      Error,
+      RowResponse,
+      string[],
+      number
+    >({
       queryKey: ['rows'],
       queryFn: async ({ pageParam = 0 }) => {
         const delay = Math.floor(Math.random() * 400) + 200; // 200–600ms
@@ -31,7 +33,8 @@ const ChildTable: React.FC<ChildTableProps> = ({
           limit: PAGE_SIZE,
         });
       },
-      getNextPageParam: (lastPage, allPages) => {
+      initialPageParam: 0,
+      getNextPageParam: (_lastPage, allPages) => {
         const totalFetched = allPages.flatMap((p) => p.rows).length;
         return totalFetched < totalRowCount
           ? allPages.length
@@ -39,6 +42,7 @@ const ChildTable: React.FC<ChildTableProps> = ({
       },
     });
 
+  // @ts-ignore
   const allRows = data?.pages.flatMap((page) => page.rows) ?? [];
   console.log(allRows);
   const table = useMaterialReactTable({

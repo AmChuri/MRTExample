@@ -44,7 +44,7 @@ const Example = ({ columns }: IExample) => {
     enableColumnResizing: true,
     enableColumnVirtualization: true,
     enableClickToCopy: false,
-    enableCellActions: 'context-menu',
+    enableCellActions: true,
     enableGlobalFilterModes: true,
     enablePagination: false,
     enableColumnPinning: true,

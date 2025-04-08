@@ -4,7 +4,7 @@ type ColumnResponse = {
   totalRowCount: number;
 };
 
-type RowResponse = {
+export type RowResponse = {
   rows: Record<string, any>[];
 };
 
@@ -20,7 +20,7 @@ const generateColumnNames = (count: number): string[] => {
 };
 
 // Utility to generate a single row with the given columns
-const generateRow = (columns: string): Record<string, any> =>
+const generateRow = (columns: string[]): Record<string, any> =>
   Object.fromEntries(
     columns.map((col) => [
       col,
