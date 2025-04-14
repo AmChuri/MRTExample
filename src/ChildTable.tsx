@@ -1,11 +1,13 @@
 // ChildTable.tsx
-import { Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import {
   MaterialReactTable,
+  MRT_RowSelectionState,
   MRT_TableOptions,
   useMaterialReactTable,
 } from 'material-react-table';
+import { useCallback, useState } from 'react';
 import { getRows, RowResponse } from './fakeApi';
 import { Person } from './ParentComponent';
 
@@ -17,6 +19,30 @@ type ChildTableProps = {
 const PAGE_SIZE = 500;
 
 const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
+  const [isMultiSelectEnabled, setIsMultiSelectEnabled] =
+    useState(false);
+  const [rowSelection, setRowSelection] =
+    useState<MRT_RowSelectionState>({});
+  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
+
+  // 2️⃣ Toggle Row ID Selection
+  const handleRowId = useCallback((id: string) => {
+    setSelectedRowIds((prevIds) =>
+      prevIds.includes(id)
+        ? prevIds.filter((prevId) => prevId !== id)
+        : [...prevIds, id]
+    );
+
+    setRowSelection((prev) => {
+      const newSelection = { ...prev };
+      if (newSelection[id]) {
+        delete newSelection[id];
+      } else {
+        newSelection[id] = true;
+      }
+      return newSelection;
+    });
+  }, []);
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery<
       RowResponse,
@@ -45,6 +71,23 @@ const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
 
   // @ts-ignore
   const allRows = data?.pages.flatMap((page) => page.rows) ?? [];
+
+  const getRowProps = useCallback(
+    ({ row }: { row: any }) => ({
+      onClick: () => handleRowId(row.id),
+      sx: {
+        height: '24px',
+        cursor: 'pointer',
+        backgroundColor: selectedRowIds.includes(row.id)
+          ? '#ffcccc' // 🔴 red highlight
+          : row.index % 2 === 0
+          ? '#f9f9f9'
+          : 'white',
+      },
+    }),
+    [selectedRowIds, handleRowId]
+  );
+
   const table = useMaterialReactTable({
     columns,
     data: allRows,
@@ -54,13 +97,34 @@ const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
     manualPagination: true,
     rowCount: totalRowCount,
     enableColumnOrdering: true,
+    enableColumnPinning: true,
+    enableMultiRowSelection: isMultiSelectEnabled,
+    onRowSelectionChange: setRowSelection,
+    muiTableBodyRowProps: getRowProps,
     rowVirtualizerOptions: { overscan: 4 },
-    muiTableBodyRowProps: ({ row }) => ({
-      sx: {
-        height: '24px',
-        backgroundColor: row.index % 2 === 0 ? '#f9f9f9' : 'white',
-      },
-    }),
+
+    muiTableHeadProps: {
+      sx: { display: 'flex', justifyContent: 'space-between' }, // space between header and toggle
+      children: (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            width: '100%',
+          }}
+        >
+          <Button
+            onClick={() => setIsMultiSelectEnabled((prev) => !prev)}
+            variant="contained"
+            sx={{ marginBottom: '16px' }}
+          >
+            {isMultiSelectEnabled
+              ? 'Disable Multi-Select'
+              : 'Enable Multi-Select'}
+          </Button>
+        </Box>
+      ),
+    },
     muiTableContainerProps: {
       sx: { maxHeight: '600px', overflowY: 'auto' },
       onScroll: (e) => {
@@ -85,7 +149,11 @@ const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
     ),
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <>
+      <MaterialReactTable table={table} />
+    </>
+  );
 };
 
 export default ChildTable;
