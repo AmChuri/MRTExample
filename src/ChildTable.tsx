@@ -24,7 +24,7 @@ const ChildTable = ({ columns, totalRowCount }: ChildTableProps) => {
   const [rowSelection, setRowSelection] =
     useState<MRT_RowSelectionState>({});
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
-
+  console.log(rowSelection);
   // 2️⃣ Toggle Row ID Selection
   const handleRowId = useCallback((id: string) => {
     setSelectedRowIds((prevIds) =>
