@@ -3,7 +3,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import './App.css';
-import ParentComponent from './ParentComponent';
+import ProjectDashboardView from './Project/ProjectDashboardView';
 
 const queryClient = new QueryClient();
 
@@ -13,7 +13,8 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         {/*<MainComponent />*/}
-        <ParentComponent />
+        {/* <ParentComponent />*/}
+        <ProjectDashboardView />
       </QueryClientProvider>
     </>
   );
